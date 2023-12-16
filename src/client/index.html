@@ -4,10 +4,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Node Chat</title>
+    <!-- Socket.io -->
     <script type="module">
       import { io } from 'https://cdn.socket.io/4.3.2/socket.io.esm.min.js'
       const socket = io()
+
+      const form = document.getElementById('form')
+      const input = document.getElementById('input')
+      const messages = document.getElementById('messages')
+
+      socket.on('chat message', (msg) => {
+        const item = `<li>${msg}</li>`
+        messages.insertAdjacentHTML('beforeend', item)
+      })
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault()
+        if (input.value) {
+          socket.emit('chat message', input.value)
+          input.value = ''
+        }
+      })
     </script>
+    <!-- Socket.io -->
     <style>
       *,
       *::before,
@@ -26,6 +45,13 @@
         height: 100vh;
         padding: 36px;
         grid-template-rows: 1fr;
+      }
+      #messages {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow-y: scroll;
+        height: calc(100vh - 48px);
       }
       #chat {
         border: 1px solid #ccc;
@@ -71,10 +97,11 @@
   </head>
   <body>
     <section id="chat">
+      <ul id="messages"></ul>
       <form id="form">
         <input
           type="text"
-          name="message"
+          name="input"
           id="input"
           placeholder="Type a message..."
           autocomplete="off"
