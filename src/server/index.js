@@ -16,6 +16,7 @@ await db.execute(`
   CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     content TEXT NOT NULL
+    user TEXT NOT NULL,
   )
 `)
 
@@ -25,7 +26,7 @@ const io = new Server(server, {
   connectionStateRecovery: {}
 })
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
   console.log('a user connected')
 
   socket.on('disconnect', () => {
@@ -45,6 +46,20 @@ io.on('connection', (socket) => {
     }
     io.emit('chat message', msg, result.lastInsertRowid.toString())
   })
+
+  if (!socket.recovered) {
+    try {
+      const result = await db.execute({
+        sql: 'SELECT * FROM messages WHERE id > ?',
+        args: [socket.handshake.auth.serverOffset ?? 0]
+      })
+      result.rows.forEach((row) => {
+        socket.emit('chat message', row.content, row.id.toString())
+      })
+    } catch (err) {
+      console.error(err)
+    }
+  }
 })
 
 app.use(logger('dev'))
