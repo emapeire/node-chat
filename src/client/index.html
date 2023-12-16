@@ -51,7 +51,14 @@
         margin: 0;
         padding: 0;
         overflow-y: scroll;
-        height: calc(100vh - 48px);
+        height: 100%;
+      }
+      #messages > li {
+        padding: 0.5rem 1rem;
+      }
+      #messages > li:nth-child(odd) {
+        background: #ccc;
+        color: #000;
       }
       #chat {
         border: 1px solid #ccc;
