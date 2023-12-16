@@ -2,8 +2,22 @@ import express from 'express'
 import logger from 'morgan'
 import { Server } from 'socket.io'
 import { createServer } from 'node:http'
+import { createClient } from '@libsql/client'
+import 'dotenv/config.js'
 
 const port = process.env.PORT ?? 3000
+
+const db = createClient({
+  url: 'libsql://obliging-hulk-emapeire.turso.io',
+  authToken: process.env.DB_TOKEN
+})
+
+await db.execute(`
+  CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    content TEXT NOT NULL
+  )
+`)
 
 const app = express()
 const server = createServer(app)
@@ -18,8 +32,18 @@ io.on('connection', (socket) => {
     console.log('user disconnected')
   })
 
-  socket.on('chat message', (msg) => {
-    io.emit('chat message', msg)
+  socket.on('chat message', async (msg) => {
+    let result
+    try {
+      result = await db.execute({
+        sql: 'INSERT INTO messages (content) VALUES (:msg)',
+        args: { msg }
+      })
+    } catch (err) {
+      console.error(err)
+      return
+    }
+    io.emit('chat message', msg, result.lastInsertRowid.toString())
   })
 })
 
