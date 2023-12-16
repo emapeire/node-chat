@@ -1,14 +1,21 @@
 {
   "name": "chat",
   "version": "1.0.0",
-  "description": "",
+  "type": "module",
+  "description": "Node chat server",
   "main": "index.js",
   "scripts": {
+    "start": "node --watch src/server/index.js",
+    "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "chat",
+    "node",
+    "express"
+  ],
+  "author": "Emanuel Peire",
+  "license": "MIT",
   "dependencies": {
     "express": "4.18.2"
   },
