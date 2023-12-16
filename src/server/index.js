@@ -8,7 +8,7 @@ app.use(logger('dev'))
 app.disable('x-powered-by')
 
 app.get('/', (req, res) => {
-  res.send('Hello, World!')
+  res.sendFile(process.cwd() + '/src/client/index.html')
 })
 
 app.listen(port, () => {
