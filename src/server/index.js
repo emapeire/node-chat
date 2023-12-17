@@ -38,7 +38,7 @@ io.on('connection', async (socket) => {
     const username = socket.handshake.auth.username ?? 'Anonymous'
     try {
       result = await db.execute({
-        sql: 'INSERT INTO messages VALUES (:msg, :username)',
+        sql: 'INSERT INTO messages (content, user) VALUES (:msg, :username)',
         args: { msg, username }
       })
     } catch (err) {
