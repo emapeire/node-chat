@@ -35,16 +35,17 @@ io.on('connection', async (socket) => {
 
   socket.on('chat message', async (msg) => {
     let result
+    const username = socket.handshake.auth.username ?? 'Anonymous'
     try {
       result = await db.execute({
-        sql: 'INSERT INTO messages (content) VALUES (:msg)',
-        args: { msg }
+        sql: 'INSERT INTO messages VALUES (:msg, :username)',
+        args: { msg, username }
       })
     } catch (err) {
       console.error(err)
       return
     }
-    io.emit('chat message', msg, result.lastInsertRowid.toString())
+    io.emit('chat message', msg, result.lastInsertRowid.toString(), username)
   })
 
   if (!socket.recovered) {
@@ -54,7 +55,12 @@ io.on('connection', async (socket) => {
         args: [socket.handshake.auth.serverOffset ?? 0]
       })
       result.rows.forEach((row) => {
-        socket.emit('chat message', row.content, row.id.toString())
+        socket.emit(
+          'chat message',
+          row.content,
+          row.id.toString(),
+          row.username
+        )
       })
     } catch (err) {
       console.error(err)

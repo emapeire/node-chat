@@ -32,7 +32,7 @@
         }
       })
 
-      socket.on('chat message', (msg, serverOffset) => {
+      socket.on('chat message', (msg, serverOffset, username) => {
         const item = `<li>${msg}</li>`
         messages.insertAdjacentHTML('beforeend', item)
         server.auth.serverOffset = serverOffset
