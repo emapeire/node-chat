@@ -16,6 +16,7 @@
         const username = localStorage.getItem('username')
         if (username) {
           console.log(`Username: ${username}`)
+          return username
         }
         const res = await fetch(
           'https://random-data-api.com/api/users/random_user'
@@ -33,7 +34,10 @@
       })
 
       socket.on('chat message', (msg, serverOffset, username) => {
-        const item = `<li>${msg}</li>`
+        const item = `<li>
+          <p>${msg}</p>
+          <small>${username}</small>
+          </li>`
         messages.insertAdjacentHTML('beforeend', item)
         server.auth.serverOffset = serverOffset
       })

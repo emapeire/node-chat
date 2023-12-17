@@ -55,12 +55,7 @@ io.on('connection', async (socket) => {
         args: [socket.handshake.auth.serverOffset ?? 0]
       })
       result.rows.forEach((row) => {
-        socket.emit(
-          'chat message',
-          row.content,
-          row.id.toString(),
-          row.username
-        )
+        socket.emit('chat message', row.content, row.id.toString(), row.user)
       })
     } catch (err) {
       console.error(err)
